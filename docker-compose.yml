@@ -1,0 +1,48 @@
+name: your-app
+
+services:
+  your-app-postgres:
+    image: postgres:15
+    restart: always
+    environment:
+      - POSTGRES_DB=mydb
+      - POSTGRES_USER=johndoe
+      - POSTGRES_PASSWORD=randompassword
+    ports:
+      - '5432:5432'
+    networks:
+      - your-app-prisma-network
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U johndoe -d mydb']
+      interval: 5s
+      timeout: 2s
+      retries: 20
+    volumes:
+      - your-app-postgres_data:/var/lib/postgresql/data
+    command: postgres -c listen_addresses='*'
+    logging:
+      options:
+        max-size: '10m'
+        max-file: '3'
+
+  your-app-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '8080:8080'
+    stdin_open: true
+    tty: true
+    depends_on:
+      your-app-postgres:
+        condition: service_healthy
+    env_file:
+      - .env
+    networks:
+      - your-app-prisma-network
+
+networks:
+  your-app-prisma-network:
+
+volumes:
+  your-app-postgres_data:

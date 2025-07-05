@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+model User {
+  id            Int            @id @default(autoincrement())
+  email         String         @unique
+  name          String
+  role          UserRole       @default(USER)
+  password      Password?
+  createdAt     DateTime       @default(now())
+  confirmations Confirmation[]
+}
+
+model Password {
+  id     Int    @id @default(autoincrement())
+  userId Int    @unique
+  user   User   @relation(fields: [userId], references: [id])
+  hash   String
+}
+
+enum ConfirmationType {
+  PASSWORD_RESET
+  EMAIL_VERIFICATION
+  EMAIL_CHANGE
+}
+
+model Confirmation {
+  id        Int              @id @default(autoincrement())
+  userId    Int
+  user      User             @relation(fields: [userId], references: [id])
+  token     String
+  type      ConfirmationType
+  expiry    DateTime
+  used      Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  @@unique([token, type])
+}
