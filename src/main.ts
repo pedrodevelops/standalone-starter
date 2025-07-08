@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { bootstrap } from './bootstrap';
-import { getEnv } from './lib/helpers/env.helper';
+import { getEnv } from './lib/utils/get-env.utils';
 
 async function main() {
   const app = await bootstrap();

@@ -10,6 +10,7 @@ export type Environment = {
   DOCS_PATH: string;
   LOG_LEVEL: string;
   JWT_SECRET: string;
+  MAILER_TRANSPORT: string;
 };
 
 /**

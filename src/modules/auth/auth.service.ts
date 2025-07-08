@@ -1,6 +1,12 @@
 import { PasswordHelper } from '@/lib/helpers/password.helper';
+import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { JwtService } from '@nestjs/jwt';
+import {
+  USER_CREATED_EVENT,
+  UserCreatedEvent,
+} from '../users/events/user-created.event';
 import { User } from '../users/models/user.model';
 import { UsersService } from '../users/users.service';
 import { Access } from './models/access.model';
@@ -11,9 +17,17 @@ export class AuthService {
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     private readonly passwordHelper: PasswordHelper,
+    private readonly eventEmitter: EventEmitter2,
+    private readonly mailerService: MailerService,
   ) {}
 
-  async signIn(email: string, password: string): Promise<User> {
+  async signIn({
+    email,
+    password,
+  }: {
+    email: string;
+    password: string;
+  }): Promise<User> {
     const [user, storedPassword] = await Promise.all([
       await this.usersService.getByEmailOrThrow(email),
       await this.passwordHelper.getByEmailOrThrow(email),
@@ -35,7 +49,15 @@ export class AuthService {
     };
   }
 
-  async signUp(email: string, password: string, name: string): Promise<User> {
+  async signUp({
+    name,
+    email,
+    password,
+  }: {
+    name: string;
+    email: string;
+    password: string;
+  }): Promise<User> {
     await this.usersService.throwIfUniqueFieldsConflict({
       email,
     });
@@ -49,6 +71,11 @@ export class AuthService {
         },
       },
     });
+
+    this.eventEmitter.emit(
+      USER_CREATED_EVENT,
+      new UserCreatedEvent({ email, userName: user.name }),
+    );
 
     return {
       id: user.id,

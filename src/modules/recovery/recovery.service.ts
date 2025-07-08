@@ -1,6 +1,11 @@
 import { PasswordHelper } from '@/lib/helpers/password.helper';
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import {
+  RESET_PASSWORD_EVENT,
+  ResetPasswordEvent,
+} from '../auth/events/reset-password.event';
 import { ConfirmationService } from '../confirmation/confirmation.service';
 import { ConfirmationType } from '../confirmation/enums/confirmation-type.enum';
 import { PrismaService } from '../prisma/prisma.service';
@@ -14,6 +19,7 @@ export class RecoveryService {
     private readonly mailer: MailerService,
     private readonly passwordHelper: PasswordHelper,
     private readonly confirmationService: ConfirmationService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   /**
@@ -30,7 +36,12 @@ export class RecoveryService {
     await this.mailer.sendMail({
       from: 'support@your-app.com',
       to: email,
-      text: `A password reset action was requested, please confirm that it was you: ${confirmation.token}`,
+      subject: 'Reset your password',
+      template: './password-reset-request',
+      context: {
+        userName: user.name,
+        token: confirmation.token,
+      },
     });
   }
 
@@ -46,6 +57,13 @@ export class RecoveryService {
     );
 
     await this.passwordHelper.update(confirmation.userId, newPassword);
+
+    this.eventEmitter.emit(
+      RESET_PASSWORD_EVENT,
+      new ResetPasswordEvent({
+        userId: confirmation.userId,
+      }),
+    );
   }
 
   async requestEmailChange(userId: number, email: string) {
@@ -57,7 +75,12 @@ export class RecoveryService {
     await this.mailer.sendMail({
       from: 'support@your-app.com',
       to: email,
+      subject: 'Confirm the email change',
       text: `A password reset action was requested, please confirm that it was you: ${confirmation.token}`,
+      template: './change-email-request',
+      context: {
+        token: confirmation.token,
+      },
     });
   }
 

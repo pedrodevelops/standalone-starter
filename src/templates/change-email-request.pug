@@ -1,0 +1,18 @@
+extends layouts/main
+
+block content
+  h2 Email Change Request
+  p We received a request to change your email address for your account.
+  p Please use the confirmation code below to proceed with your email change:
+  .token-box
+    | #{token}
+  .warning
+    p ⚠️ Security Notice:
+    ul
+      li This code will expire in 15 minutes
+      li If you didn't request this change, please ignore this email
+      li Never share this code with anyone
+  p To complete your email change, enter this code in the application.
+  p If you're having trouble or didn't request this change, please contact our support team immediately.
+  p Best regards,
+  p The Security Team

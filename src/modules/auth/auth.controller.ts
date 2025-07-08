@@ -11,6 +11,7 @@ import {
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
+import { Public } from './decorators/public.decorator';
 import { SignInDTO } from './dto/sign-in.dto';
 import { SignUpDTO } from './dto/sign-up.dto';
 import { UserDTO } from './dto/user.dto';
@@ -21,19 +22,16 @@ import { CookieHelper } from './helpers/cookie.helper';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Public()
   @Post('/sign-up')
   @ApiOperation({
     summary: 'Signs up a new user',
   })
   async signUp(
     @Body() body: SignUpDTO,
-    @Res() res: Response,
+    @Res({ passthrough: true }) res: Response,
   ): Promise<UserDTO> {
-    const user = await this.authService.signUp(
-      body.name,
-      body.email,
-      body.password,
-    );
+    const user = await this.authService.signUp(body);
 
     const access = await this.authService.grantAccess(user);
 
@@ -42,15 +40,16 @@ export class AuthController {
     return user;
   }
 
+  @Public()
   @Post('/sign-in')
   @ApiOperation({
     summary: 'Signs in a user',
   })
   async signIn(
     @Body() body: SignInDTO,
-    @Res() res: Response,
+    @Res({ passthrough: true }) res: Response,
   ): Promise<UserDTO> {
-    const user = await this.authService.signIn(body.email, body.password);
+    const user = await this.authService.signIn(body);
     const access = await this.authService.grantAccess(user);
 
     CookieHelper.setAuthCookies(res, access);
@@ -70,7 +69,10 @@ export class AuthController {
   @ApiOperation({
     summary: "Refreshes a user's access token",
   })
-  async refreshToken(@Req() req: Request, @Res() res: Response) {
+  async refreshToken(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const token = CookieHelper.getRefreshTokenCookie(req);
     if (!token) {
       throw new UnauthorizedException('Refresh token not found');

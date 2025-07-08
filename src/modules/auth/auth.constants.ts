@@ -1,4 +1,7 @@
-export const authConstants = {
-  accessTokenCookieName: 'access_token',
-  refreshTokenCookieName: 'refresh_token',
+/**
+ * Auth-related cookie names
+ */
+export const CookieNames = {
+  ACCESS_TOKEN: 'access_token',
+  REFRESH_TOKEN: 'refresh_token',
 };

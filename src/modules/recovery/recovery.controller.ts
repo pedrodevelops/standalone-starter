@@ -1,6 +1,6 @@
 import { Tags } from '@/lib/constants/docs.constants';
 import { MessageDTO } from '@/lib/dto/message.dto';
-import { Body, Controller, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   CurrentUser,
@@ -45,7 +45,7 @@ export class RecoveryController {
     };
   }
 
-  @Patch('/request-email-change')
+  @Get('/request-email-change')
   @ApiOperation({
     summary: 'Request a email change',
   })

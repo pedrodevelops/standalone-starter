@@ -1,5 +1,7 @@
 import { ConfirmationType } from '@/modules/confirmation/enums/confirmation-type.enum';
 import { NotFoundException } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { createMockEventEmitter } from '@test/mocks/event.mock';
 import {
   createMockConfirmation,
   createMockConfirmationService,
@@ -17,12 +19,14 @@ describe('RecoveryService', () => {
   let mockConfirmationService: ReturnType<typeof createMockConfirmationService>;
   let mockMailerService: ReturnType<typeof createMockMailerService>;
   let mockPasswordHelper: ReturnType<typeof createMockPasswordHelper>;
+  let mockEventEmitter: ReturnType<typeof createMockEventEmitter>;
 
   beforeEach(() => {
     mockUsersService = createMockUsersService();
     mockConfirmationService = createMockConfirmationService();
     mockMailerService = createMockMailerService();
     mockPasswordHelper = createMockPasswordHelper();
+    mockEventEmitter = createMockEventEmitter();
 
     service = new RecoveryService(
       {} as any, // currently not using prisma on covered methods
@@ -30,6 +34,7 @@ describe('RecoveryService', () => {
       mockMailerService as any,
       mockPasswordHelper as any,
       mockConfirmationService as any,
+      mockEventEmitter as any as EventEmitter2,
     );
   });
 

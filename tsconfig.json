@@ -21,7 +21,9 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "esModuleInterop": true
   },
-  "include": ["generated", "src", "test"]
+  "include": ["generated", "src/**/*", "test"],
+  "exclude": ["node_modules", "dist"]
 }

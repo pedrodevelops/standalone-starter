@@ -1,10 +1,10 @@
 import { NodeEnv } from '@/config/app.config';
-import { authConstants } from '@/modules/auth/auth.constants';
+import { CookieNames } from '@/modules/auth/auth.constants';
 import { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { apiReference } from '@scalar/nestjs-api-reference';
 import { Tags } from '../constants/docs.constants';
-import { getEnv } from '../helpers/env.helper';
+import { getEnv } from '../utils/get-env.utils';
 
 const swaggerConfig = new DocumentBuilder()
   .setTitle('Standalone Starter')
@@ -18,7 +18,7 @@ Welcome to the Standalone Starter API documentation. This API provides a set of 
   )
   .setVersion('0.0.1')
   .addCookieAuth(
-    authConstants.accessTokenCookieName,
+    CookieNames.ACCESS_TOKEN,
     {
       type: 'http',
       scheme: 'bearer',
