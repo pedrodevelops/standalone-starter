@@ -76,7 +76,6 @@ export class RecoveryService {
       from: 'support@your-app.com',
       to: email,
       subject: 'Confirm the email change',
-      text: `A password reset action was requested, please confirm that it was you: ${confirmation.token}`,
       template: './change-email-request',
       context: {
         token: confirmation.token,

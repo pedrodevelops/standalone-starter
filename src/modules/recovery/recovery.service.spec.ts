@@ -70,8 +70,13 @@ describe('RecoveryService', () => {
       );
       expect(mockMailerService.sendMail).toHaveBeenCalledWith({
         from: 'support@your-app.com',
-        to: 'test@example.com',
-        text: `A password reset action was requested, please confirm that it was you: ${mockConfirmation.token}`,
+        to: mockUser.email,
+        subject: 'Reset your password',
+        template: './password-reset-request',
+        context: {
+          userName: mockUser.name,
+          token: mockConfirmation.token,
+        },
       });
     });
   });
@@ -128,7 +133,11 @@ describe('RecoveryService', () => {
       expect(mockMailerService.sendMail).toHaveBeenCalledWith({
         from: 'support@your-app.com',
         to: 'new@example.com',
-        text: 'A password reset action was requested, please confirm that it was you: email-change-token',
+        subject: 'Confirm the email change',
+        template: './change-email-request',
+        context: {
+          token: mockConfirmation.token,
+        },
       });
     });
   });
