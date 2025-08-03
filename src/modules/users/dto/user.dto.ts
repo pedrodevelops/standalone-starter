@@ -18,6 +18,11 @@ export class UserDTO {
   email: string;
 
   @ApiProperty({
+    example: 'https://github.com/shadcn.png',
+  })
+  avatarUrl: string | null;
+
+  @ApiProperty({
     example: UserRole.USER,
     enum: () => UserRole,
   })

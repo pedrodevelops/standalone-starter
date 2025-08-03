@@ -41,12 +41,7 @@ export class AuthService {
       throw new UnauthorizedException('password.invalid');
     }
 
-    return {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      role: user.role,
-    };
+    return user;
   }
 
   async signUp({
@@ -77,12 +72,7 @@ export class AuthService {
       new UserCreatedEvent({ email, userName: user.name }),
     );
 
-    return {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      role: user.role,
-    };
+    return user;
   }
 
   async refreshToken(refreshToken: string): Promise<Access> {

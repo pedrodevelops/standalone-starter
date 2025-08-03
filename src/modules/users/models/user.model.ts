@@ -5,6 +5,7 @@ export type IUser = {
   email: string;
   name: string;
   role: UserRole;
+  avatarUrl: string | null;
 };
 
 export class User {
@@ -12,4 +13,5 @@ export class User {
   email: string;
   name: string;
   role: UserRole;
+  avatarUrl: string | null;
 }

@@ -10,11 +10,11 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
+import { UserDTO } from '../users/dto/user.dto';
 import { AuthService } from './auth.service';
 import { Public } from './decorators/public.decorator';
 import { SignInDTO } from './dto/sign-in.dto';
 import { SignUpDTO } from './dto/sign-up.dto';
-import { UserDTO } from './dto/user.dto';
 import { CookieHelper } from './helpers/cookie.helper';
 
 @ApiTags(Tags.AUTH)

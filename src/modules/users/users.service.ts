@@ -5,19 +5,25 @@ import {
 } from '@nestjs/common';
 import { Prisma } from 'generated/prisma';
 import { PrismaService } from '../prisma/prisma.service';
-import { UserRole } from './enums/user-role.enum';
+import { UploadResult, UploadService } from '../upload/upload.service';
 import { User } from './models/user.model';
+import { UsersMapper } from './users.mapper';
 
-const USER_SELECT = {
+export const USER_SELECT = {
   id: true,
   email: true,
   name: true,
   role: true,
+  avatarUrl: true,
 };
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly usersMapper: UsersMapper,
+    private readonly uploadService: UploadService,
+  ) {}
 
   async getByEmail(email: string): Promise<User | null> {
     const user = await this.prisma.user.findUnique({
@@ -29,10 +35,7 @@ export class UsersService {
       return null;
     }
 
-    return {
-      ...user,
-      role: UserRole[user.role],
-    };
+    return this.usersMapper.toModel(user);
   }
 
   async getByEmailOrThrow(email: string): Promise<User> {
@@ -45,10 +48,7 @@ export class UsersService {
       throw new NotFoundException(`User not found`);
     }
 
-    return {
-      ...user,
-      role: UserRole[user.role],
-    };
+    return this.usersMapper.toModel(user);
   }
 
   async getById(id: number): Promise<User> {
@@ -61,10 +61,7 @@ export class UsersService {
       throw new NotFoundException(`User not found`);
     }
 
-    return {
-      ...user,
-      role: UserRole[user.role],
-    };
+    return this.usersMapper.toModel(user);
   }
 
   async getByIdOrThrow(id: number): Promise<User> {
@@ -77,10 +74,7 @@ export class UsersService {
       throw new NotFoundException(`User not found`);
     }
 
-    return {
-      ...user,
-      role: UserRole[user.role],
-    };
+    return this.usersMapper.toModel(user);
   }
 
   async throwIfUniqueFieldsConflict(where: Prisma.UserWhereUniqueInput) {
@@ -108,10 +102,7 @@ export class UsersService {
       select: USER_SELECT,
     });
 
-    return {
-      ...user,
-      role: UserRole[user.role],
-    };
+    return this.usersMapper.toModel(user);
   }
 
   async update(id: number, input: Prisma.UserUpdateInput): Promise<User> {
@@ -127,10 +118,7 @@ export class UsersService {
       select: USER_SELECT,
     });
 
-    return {
-      ...user,
-      role: UserRole[user.role],
-    };
+    return this.usersMapper.toModel(user);
   }
 
   async delete(id: number): Promise<User> {
@@ -139,9 +127,15 @@ export class UsersService {
       select: USER_SELECT,
     });
 
-    return {
-      ...user,
-      role: UserRole[user.role],
-    };
+    return this.usersMapper.toModel(user);
+  }
+
+  uploadAvatar(file: any): Promise<UploadResult> {
+    return this.uploadService.uploadImage(file, 'avatars', {
+      width: 300,
+      height: 300,
+      crop: 'fill',
+      quality: 'auto',
+    });
   }
 }
